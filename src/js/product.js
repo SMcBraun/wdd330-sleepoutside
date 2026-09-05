@@ -1,48 +1,40 @@
-// Import storage utilities and data model.
-// getLocalStorage is essential because we must inspect existing cart data before writing.
-import { getLocalStorage, setLocalStorage } from "./utils.mjs";
+/*
+  HINT: Module Imports
+  PURPOSE: Bring in the helper tools needed to run this page.
+  VALUE: Splits large code files into small, focused workers.
+  RATIONALE: 'utils.mjs' reads the web link, 'ProductData.mjs' fetches the file, 
+             and 'ProductDetails.mjs' draws the product on screen.
+  LEARNING GAP: Always include the file extensions (.mjs or .js) in browser module imports.
+*/
+import { getParam } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
+import ProductDetails from "./ProductDetails.mjs";
 
-// Initialize data source to query products from the "tents" category
+/*
+  HINT: Step 1 - Stockroom Worker
+  PURPOSE: Tells ProductData to open the "tents" category list.
+  VALUE: Prepares our data fetcher so it knows where to search.
+*/
 const dataSource = new ProductData("tents");
 
-/**
- * Handles appending a product to the cart stored in localStorage.
- * 
- * WHY THIS LOGIC EXISTS:
- * 1. Storage Isolation: localStorage can only hold key-value strings. 
- *    Overwriting "so-cart" directly with an object erases prior additions.
- * 2. Data Persistence: We must pull existing items, mutate the list in memory, 
- *    and reserialize the full array back to disk.
- * 3. Defensive Programming: Checking Array.isArray prevents runtime crashes 
- *    when storage is null (first run) or corrupted by non-array data.
- */
-function addProductToCart(product) {
-  // Step 1: Read existing state from browser storage (deserialized via JSON.parse)
-  let cart = getLocalStorage("so-cart");
+/*
+  HINT: Step 2 - Read Order Ticket
+  PURPOSE: Pulls the product ID out of the address bar (?product=880RR -> "880RR").
+  VALUE: Allows this single file to work for any tent clicked.
+  LEARNING GAP: If the URL has no '?product=', this returns null.
+*/
+const productId = getParam("product");
 
-  // Step 2: Ensure fallback structure. If empty or invalid, initialize an empty collection.
-  if (!Array.isArray(cart)) {
-    cart = [];
-  }
+/*
+  HINT: Step 3 - Create Floor Manager
+  PURPOSE: Bundles the tent ID and the data reader into a ProductDetails object.
+  VALUE: Keeps all rendering and cart-handling logic isolated in one clean helper class.
+*/
+const product = new ProductDetails(productId, dataSource);
 
-  // Step 3: Append the newly selected product object into our in-memory array
-  cart.push(product);
-
-  // Step 4: Write the updated collection back to storage (serialized via JSON.stringify)
-  setLocalStorage("so-cart", cart);
-}
-
-/**
- * Event handler triggered when the user clicks "Add to Cart".
- * Uses asynchronous resolution to fetch product details by dataset ID before updating state.
- */
-async function addToCartHandler(e) {
-  const product = await dataSource.findProductById(e.target.dataset.id);
-  addProductToCart(product);
-}
-
-// Bind click event to trigger the retrieval and save flow
-document
-  .getElementById("addToCart")
-  .addEventListener("click", addToCartHandler);
+/*
+  HINT: Step 4 - Initialize
+  PURPOSE: Starts the sequence: fetches the tent data, builds the HTML, and hooks up the Add to Cart button.
+  VALUE: Ensures the HTML elements exist BEFORE trying to attach the click listener, preventing null errors.
+*/
+product.init();
