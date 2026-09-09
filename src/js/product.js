@@ -1,7 +1,20 @@
-import { getLocalStorage, setLocalStorage } from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, getParam } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 
 const dataSource = new ProductData("tents");
+const productId = getParam("product");
+
+async function testProductFetch() {
+  if (productId) {
+    const product = await dataSource.findProductById(productId);
+    console.log("Product ID from URL:", productId);
+    console.log("Fetched Product Data:", product);
+  } else {
+    console.warn("No product parameter found in the URL.");
+  }
+}
+
+testProductFetch();
 
 function addProductToCart(product) {
   const cartItems = getLocalStorage("so-cart") || []; // get cart array of items from local storage if null set to empty array

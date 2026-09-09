@@ -22,3 +22,24 @@ export function setClick(selector, callback) {
   qs(selector).addEventListener("click", callback);
 }
 //trying to push a change
+
+// -----------------------------------------------------------------------------
+// TOOL 5: getParam (Read URL Query Parameters)
+// -----------------------------------------------------------------------------
+// WHAT IT DOES: Reads specific variables passed through the browser's address bar.
+// WHY WE DO IT: We don't want to build 100 different HTML files for 100 products.
+// Instead, we use one generic page: "product_pages/index.html?product=880RR".
+// This helper inspects that web address, pulls out "880RR", and hands it to our
+// JavaScript so the page knows which product's details to download and display.
+// PARAMETERS:
+//   - "param": The key name we are looking for in the web address (e.g., "product").
+export function getParam(param) {
+  // "window.location.search" extracts the question mark and everything after it (e.g., "?product=880RR").
+  const queryString = window.location.search;
+ 
+  // "URLSearchParams" is a built-in browser engine that splits query strings into key/value pairs.
+  const urlParams = new URLSearchParams(queryString);
+ 
+  // We ask the engine for the exact value paired with our key name, and return it.
+  return urlParams.get(param);
+}
