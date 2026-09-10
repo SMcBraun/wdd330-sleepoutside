@@ -36,10 +36,33 @@ export function setClick(selector, callback) {
 export function getParam(param) {
   // "window.location.search" extracts the question mark and everything after it (e.g., "?product=880RR").
   const queryString = window.location.search;
- 
+
   // "URLSearchParams" is a built-in browser engine that splits query strings into key/value pairs.
   const urlParams = new URLSearchParams(queryString);
- 
+
   // We ask the engine for the exact value paired with our key name, and return it.
   return urlParams.get(param);
+}
+
+/**
+ * ============================================================================
+ * LEARNING NOTE / VIDEO SCRIPT: renderListWithTemplate Utility
+ * ----------------------------------------------------------------------------
+ * A pure, reusable helper function that maps any data array through any
+ * template function and inserts the resulting HTML string into the DOM.
+ * Includes optional parameters for insertion position and element clearing.
+ * ============================================================================
+ */
+export function renderListWithTemplate(
+  templateFn,
+  parentElement,
+  list,
+  position = "afterbegin",
+  clear = false
+) {
+  if (clear) {
+    parentElement.innerHTML = "";
+  }
+  const htmlStrings = list.map(templateFn);
+  parentElement.insertAdjacentHTML(position, htmlStrings.join(""));
 }
