@@ -208,7 +208,6 @@ button {
   display: grid;
   grid-template-columns: 25% auto 15%;
   font-size: var(--small-font);
-  /* max-height: 120px; */
   align-items: center;
 }
 
@@ -263,13 +262,14 @@ footer {
 }
 
 /* Cart total and visibility helpers */
-.hide {
-  display: none;
-}
-
 .cart-footer {
   display: flex;
   justify-content: flex-end;
   padding: 1rem;
   font-weight: bold;
+}
+
+.cart-footer.hide,
+.hide {
+  display: none !important;
 }
